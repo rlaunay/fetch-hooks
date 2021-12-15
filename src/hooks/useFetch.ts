@@ -18,7 +18,7 @@ export type UseLazyFetchReturnType<T> = [
 ]
 
 export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit, queryObj?: Record<string, string> | undefined): UseLazyFetchReturnType<T> {
-  const { endpointUri, headers } = useContext(ApiContext);
+  const { endpointUri, headers, link } = useContext(ApiContext);
 
   const [data, setData] = useState<T>();
   const [loading, setLoading] = useState(false);
@@ -35,9 +35,7 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
   console.log({
     uri: getUrl(),
     options: {
-      headers: {
-        ...headers
-      },
+      headers: link(headers),
       ...options
     }
   })
@@ -46,9 +44,7 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
     setLoading(true);
     try {
       const res = await fetch(getUrl(), {
-        headers: {
-          ...headers
-        },
+        headers: link(headers),
         ...options
       })
 

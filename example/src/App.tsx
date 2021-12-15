@@ -1,5 +1,4 @@
 import { useGet, useLazyGet } from "@katsuo/fetch-hooks"
-import { useEffect } from "react";
 
 function App() {
   const { loading, error, data } = useGet('/login', {

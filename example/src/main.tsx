@@ -8,6 +8,13 @@ const fetchClient = new FetchClient({
   uri: "http://localhost:3001",
   headers: {
     'Content-Type': 'application/json'
+  },
+  link: (headers) => {
+    const token = localStorage.getItem('TOKEN');
+    return {
+      ...headers,
+      Authorisation: token ? `Baerer ${token}` : ''
+    }
   }
 })
 
