@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { ApiContext } from "../context/ApiContext";
 
 
 export type BodyRequest = {
-  [key: string]: string | null | undefined | boolean | number | BodyRequest
+  [key: string]: string | null | undefined | boolean | number | any[] |BodyRequest
 }
 
 export type UseFetchReturnType<T = unknown> = {
@@ -24,13 +24,13 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState();
 
-  const getUrl = () => {
+  const getUrl = useCallback(() => {
     const url = new URL(endpointUri + endpoint);
     const query = new URLSearchParams(queryObj);
     url.search = query.toString();
 
     return url.toString();
-  }
+  }, [endpointUri, endpoint, queryObj])
 
   console.log({
     uri: getUrl(),
@@ -40,7 +40,7 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
     }
   })
 
-  const getData = async () => {
+  const getData = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(getUrl(), {
@@ -60,7 +60,7 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
     } finally {
       setLoading(false);
     }
-  }
+  }, [headers, options, getUrl])
 
   return [getData, { loading, error, data }]
 }
