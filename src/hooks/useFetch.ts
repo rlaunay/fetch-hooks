@@ -6,9 +6,13 @@ export type BodyRequest = {
   [key: string]: string | null | undefined | boolean | number | any[] |BodyRequest
 }
 
+type ErrorResponse = {
+  [key: string]: undefined | null | string | number | string[]
+}
+
 export type UseFetchReturnType<T = unknown> = {
   loading: boolean;
-  error: undefined | null | string;
+  error: undefined | null | ErrorResponse;
   data: T | undefined
 }
 
@@ -54,12 +58,12 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
       const result = res.status !== 204 ? await res.json() : null;
 
       if (!res.ok) {
-        return setError(result?.message || 'Une erreur est survenue');
+        return setError(result);
       }
 
       setData(result);
     } catch (error) {
-      setError(error?.message || 'Une erreur est survenue');
+      setError(error);
       if (debug) {
         console.error(error);
       }
