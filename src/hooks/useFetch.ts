@@ -60,6 +60,9 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
       setData(result);
     } catch (error) {
       setError(error?.message || 'Une erreur est survenue');
+      if (debug) {
+        console.error(error);
+      }
     } finally {
       setLoading(false);
     }
