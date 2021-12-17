@@ -15,7 +15,8 @@ const fetchClient = new FetchClient({
       ...headers,
       Authorisation: token ? `Baerer ${token}` : ''
     }
-  }
+  },
+  debug: true
 })
 
 ReactDOM.render(
