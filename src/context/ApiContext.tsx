@@ -12,13 +12,29 @@ export const ApiContext = createContext<{
   debug: false
 })
 
-export class FetchClient {
-  constructor (readonly config: {
-    uri: string;
-    headers?: HeadersInit;
-    link?: (headers: HeadersInit) => HeadersInit,
-    debug?: boolean
-  }) { }
+type ClientConfig = {
+  uri: string;
+  headers?: HeadersInit;
+  link?: (headers: HeadersInit) => HeadersInit,
+  debug?: boolean
+}
+
+class FetchClient {
+  private static instance?: FetchClient;
+
+  constructor (readonly config: ClientConfig) { }
+
+  static getInstance(config?: ClientConfig) {
+    if (!FetchClient.instance) {
+      if (!config) throw new Error('Y a pas de config');
+      FetchClient.instance = new FetchClient(config)
+    }
+    return FetchClient.instance;
+  }
+}
+
+export function createClient(config: ClientConfig) {
+  return FetchClient.getInstance(config);
 }
 
 export const FetchProvider: React.FC<{ client: FetchClient }> = ({ children, client }) => {

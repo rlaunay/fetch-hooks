@@ -1,7 +1,8 @@
-import { useGet, useLazyGet } from "@katsuo/fetch-hooks"
+import { useGet, useLazyGet, useLazyPost } from "@katsuo/fetch-hooks"
 
 function App() {
-  const [getData, { loading, error, data }] = useLazyGet('/login');
+  // const [getData, { loading, error, data }] = useLazyGet<{ accessToken: string }>('/login');
+  const [getData, { loading, error, data }] = useLazyPost<{ accessToken: string }>('/login');
 
   const setToken  = () => {
     localStorage.setItem('TOKEN', 'fdsvl5v6ds51v6d.v4s1vds6v5ds64d65f4d.d54fs4f5d6s54f6s')

@@ -2,7 +2,7 @@ import { useGet, useLazyGet } from "./hooks/useGet"
 import { useLazyPost, usePost } from "./hooks/usePost"
 import { useLazyPut, usePut } from "./hooks/usePut"
 import { useDelete, useLazyDelete } from "./hooks/useDelete"
-import { FetchClient, FetchProvider } from "./context/ApiContext"
+import { createClient, FetchProvider } from "./context/ApiContext"
 
 export {
   useGet,
@@ -13,7 +13,7 @@ export {
   useLazyPut,
   useDelete,
   useLazyDelete,
-  FetchClient
+  createClient
 }
 
 export default FetchProvider;

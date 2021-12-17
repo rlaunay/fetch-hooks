@@ -2,13 +2,9 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { ApiContext } from "../context/ApiContext";
 
 
-export type BodyRequest = {
-  [key: string]: string | null | undefined | boolean | number | any[] |BodyRequest
-}
+export type BodyRequest = any
 
-type ErrorResponse = {
-  [key: string]: undefined | null | string | number | string[]
-}
+type ErrorResponse = unknown
 
 export type UseFetchReturnType<T = unknown> = {
   loading: boolean;
