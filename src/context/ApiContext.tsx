@@ -1,23 +1,11 @@
 import React, { createContext } from "react";
+import { ApiContextType, ClientConfig } from "../types";
 
-export const ApiContext = createContext<{
-  endpointUri: string;
-  headers: HeadersInit;
-  link: (headers: HeadersInit) => HeadersInit;
-  debug: boolean;
-}>({
+export const ApiContext = createContext<ApiContextType>({
   endpointUri: '',
   headers: {},
-  link: (_headers: HeadersInit) => ({}),
   debug: false
 })
-
-type ClientConfig = {
-  uri: string;
-  headers?: HeadersInit;
-  link?: (headers: HeadersInit) => HeadersInit,
-  debug?: boolean
-}
 
 class FetchClient {
   private static instance?: FetchClient;
@@ -38,7 +26,7 @@ export function createClient(config: ClientConfig) {
 }
 
 export const FetchProvider: React.FC<{ client: FetchClient }> = ({ children, client }) => {
-  const { uri, headers, link, debug } = client.config
+  const { uri, headers, debug } = client.config
 
 
   return (
@@ -46,8 +34,7 @@ export const FetchProvider: React.FC<{ client: FetchClient }> = ({ children, cli
       value={{
         endpointUri: uri,
         headers: headers !== undefined ? headers : {},
-        link: link !== undefined ? link : (headers) => headers,
-        debug: !!debug 
+        debug: !!debug
       }}
     >
       {children}

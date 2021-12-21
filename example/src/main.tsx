@@ -9,13 +9,6 @@ const fetchClient = createClient({
   headers: {
     'Content-Type': 'application/json'
   },
-  link: (headers) => {
-    const token = localStorage.getItem('TOKEN');
-    return {
-      ...headers,
-      Authorisation: token ? `Baerer ${token}` : ''
-    }
-  },
   debug: true
 })
 

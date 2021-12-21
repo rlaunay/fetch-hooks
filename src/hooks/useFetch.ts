@@ -1,24 +1,33 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { ApiContext } from "../context/ApiContext";
+import { RequestOptions, UseFetchReturnType, UseLazyFetchReturnType } from "../types";
 
-
-export type BodyRequest = any
-
-type ErrorResponse = unknown
-
-export type UseFetchReturnType<T = unknown> = {
-  loading: boolean;
-  error: undefined | null | ErrorResponse;
-  data: T | undefined
-}
-
-export type UseLazyFetchReturnType<T> = [
-  () => Promise<void>,
-  UseFetchReturnType<T>
-]
-
-export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit, queryObj?: Record<string, string> | undefined): UseLazyFetchReturnType<T> {
-  const { endpointUri, headers, link, debug } = useContext(ApiContext);
+export function useLazyFetch<T = unknown>(
+  endpoint: string,
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  request?: RequestOptions
+): UseLazyFetchReturnType<T> {
+  const { endpointUri, headers: baseHeaders, debug } = useContext(ApiContext);
+  
+  const query = request?.query;
+  const options = useMemo(() => ({
+    method,
+    body: request?.body,
+    cache: request?.cache,
+    credentials: request?.credentials,
+    headers: {
+      ...baseHeaders,
+      ...request?.headers
+    },
+    integrity: request?.integrity,
+    keepalive: request?.keepalive,
+    mode: request?.mode,
+    redirect: request?.redirect,
+    referrer: request?.referrer,
+    referrerPolicy: request?.referrerPolicy,
+    signal: request?.signal,
+    window: request?.window,
+  }), [request, baseHeaders, method])
 
   const [data, setData] = useState<T>();
   const [loading, setLoading] = useState(false);
@@ -26,30 +35,24 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
 
   const getUrl = useCallback(() => {
     const url = new URL(endpointUri + endpoint);
-    const query = new URLSearchParams(queryObj);
-    url.search = query.toString();
+    const searchParams = new URLSearchParams(query);
+    url.search = searchParams.toString();
 
     return url.toString();
-  }, [endpointUri, endpoint, queryObj])
+  }, [endpointUri, endpoint, query])
 
   useEffect(() => {
     if (!debug) return;
-    console.log(`${options.method} - ${endpoint} :`, {
+    console.log(`${method} - ${endpoint} :`, {
       uri: getUrl(),
-      options: {
-        headers: link(headers),
-        ...options
-      }
+      options,
     })
-  }, [getUrl, headers, options])
+  }, [getUrl, options])
 
   const getData = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(getUrl(), {
-        headers: link(headers),
-        ...options
-      })
+      const res = await fetch(getUrl(), options)
 
       const result = res.status !== 204 ? await res.json() : null;
 
@@ -66,13 +69,17 @@ export function useLazyFetch<T = unknown>(endpoint: string, options: RequestInit
     } finally {
       setLoading(false);
     }
-  }, [headers, options, getUrl])
+  }, [options, getUrl])
 
   return [getData, { loading, error, data }]
 }
 
-export function useFetch<T = unknown>(endpoint: string, option: RequestInit, queryObj?: Record<string, string> | undefined): UseFetchReturnType<T> {
-  const [getData, { loading, error, data }] = useLazyFetch<T>(endpoint, option, queryObj);
+export function useFetch<T = unknown>(
+  endpoint: string,
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  request?: RequestOptions
+): UseFetchReturnType<T> {
+  const [getData, { loading, error, data }] = useLazyFetch<T>(endpoint, method, request);
 
   useEffect(() => {
     getData();
