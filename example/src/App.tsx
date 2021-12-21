@@ -1,4 +1,4 @@
-import { useLazyFetch } from "@katsuo/fetch-hooks"
+import { useLazyFetch } from "@relaunay/fetch-hooks"
 import { useEffect } from "react";
 
 function App() {
